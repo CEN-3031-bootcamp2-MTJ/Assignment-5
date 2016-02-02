@@ -12,12 +12,13 @@
           <h1>UF Directory App</h1>
         </div>
         <div class="col-md-6">
+
           <!-- Add a ui-sref property to the anchor tags to allow navigation between different states -->
           <nav>
             <ul class="nav nav-pills">
-              <li><a>List View</a></li>
-              <li><a>Map View</a></li>
-              <li><a>Create New Listing</a></li>
+              <li><a ui-sref="listings.list" class = "btn btn-primary">List View</a></li>
+              <li><a ui-sref="listings.map" class = "btn btn-warning">Map View</a></li>
+              <li><a ui-sref="listings.create" class = "btn btn-danger">Create New Listing</a></li>
             </ul>
           </nav>
         </div>
