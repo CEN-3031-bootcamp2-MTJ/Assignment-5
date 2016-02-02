@@ -79,6 +79,31 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
         successfully finished, navigate back to the 'listing.list' state using $state.go(). If an error 
         occurs, pass it to $scope.error. 
        */
+
+        $scope.error = null;
+
+        if (!isValid) {
+        $scope.$broadcast('show-errors-check-validity', 'articleForm');
+
+        return false;
+      }
+
+        var id = $stateParams.listingId;
+
+          var listing = {
+            name: $scope.name, 
+            code: $scope.code, 
+            address: $scope.address
+          };
+
+        Listings.update(id, listing)
+              .then(function(response) {
+                //if the object is successfully saved redirect back to the list page
+                $state.go('listings.list', { successMessage: 'Listing succesfully updated!' });
+              }, function(error) {
+                //otherwise display the error
+                $scope.error = 'Unable to update listing!\n' + error;
+              });
     };
 
     $scope.remove = function() {
@@ -86,6 +111,18 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
         Implement the remove function. If the removal is successful, navigate back to 'listing.list'. Otherwise, 
         display the error. 
        */
+
+      var id = $stateParams.listingId;
+
+      Listings.delete(id)
+              .then(function(response) {
+                $scope.listing = response.data;
+                //$scope.loading = false;
+               $state.go('listings.list', { successMessage: 'Listing succesfully deleted!' });
+              }, function(error) {  
+                $scope.error = 'Unable to delete listing with id "' + id + '"\n' + error;
+               // $scope.loading = false;
+              });
     };
 
     /* Bind the success message to the scope if it exists as part of the current state */
@@ -101,5 +138,32 @@ angular.module('listings').controller('ListingsController', ['$scope', '$locatio
       }, 
       zoom: 14
     }
-  }
-]);
+
+    $scope.markers = [];
+
+    Listings.getAll().then(function (response) {
+      $scope.loading = false; //remove loader
+      $scope.listings = response.data;
+
+        for(var i = 0; i < $scope.listings.length; i++){
+        var name = $scope.listings[i].name;
+        var code = $scope.listings[i].code;
+        var address = $scope.listings[i].address;
+        var latitude = $scope.listings[i].coordinates.latitude;
+        var longitude = $scope.listings[i].coordinates.longitude;
+
+
+        var ret = {
+          
+          name: name,
+          code: code,
+          address: address,
+          latitude: latitude,
+          longitude: longitude,
+          id: i
+        };
+
+        $scope.markers[i] = ret;
+      }
+    }); 
+}]);
